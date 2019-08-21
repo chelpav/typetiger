@@ -8,7 +8,7 @@ class Word:
         self.word = dict()
         self.word['en'] = word_list[0]
         self.word['ru'] = word_list[1]
-        self.filename = f'images//{word}.png'        
+        self.filename = os.path.join('images', f'{word}.png')
 
     def draw(self, lang):
         self.chars = []
@@ -61,10 +61,9 @@ class Game:
         self.word = self.word_list[self.word_idx]
         self.word.draw(self.lang)
         self.won = False
-
         self.char_idx = 0
         while True:
-            pygame.time.delay(10)
+            pygame.time.delay(20)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
