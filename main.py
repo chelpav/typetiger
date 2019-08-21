@@ -1,5 +1,6 @@
 import pygame
 import os
+import re
 
 class Word:
     def __init__(self, word):
@@ -7,7 +8,7 @@ class Word:
         self.word = dict()
         self.word['en'] = word_list[0]
         self.word['ru'] = word_list[1]
-        self.filename = f'images//{self.word["en"].lower()}.png'        
+        self.filename = f'images//{word}.png'        
 
     def draw(self, lang):
         self.chars = []
@@ -37,8 +38,18 @@ class Game:
         pygame.init()
         self.screen = pygame.display.set_mode((600, 600))
         self.font = pygame.font.Font(None, 72)
-        self.word_list = [Word('Tiger-тигр'), Word('Cat-кошка')]
         self.lang = 'en'
+        self.word_list = self.word_list_gen()        
+
+    def word_list_gen(self):
+        word_list = []
+        with os.scandir('images') as listOfEntries:
+            for entry in listOfEntries:
+                if re.match( r'\w*\-\w*\.png', entry.name) is not None:                    
+                    word_list.append(Word(entry.name.replace('.png', '')))
+                else:
+                    print(f'{entry.name} не соответствует формату')
+        return word_list
 
     def redraw(self):
          self.word.draw(self.lang)
