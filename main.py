@@ -4,16 +4,17 @@ import re
 
 class Word:
     def __init__(self, word):
-        word_list = word.split('-')
+        word_list = word.replace('.png', '').split('-')
         self.word = dict()
         self.word['en'] = word_list[0]
         self.word['ru'] = word_list[1]
-        self.filename = os.path.join('images', f'{word}.png')
+        self.filename = os.path.join('images', word)
 
     def draw(self, lang):
         self.chars = []
         game.screen.fill((200, 255, 200))  
         img_surf = pygame.image.load(self.filename)
+        # ругается на неправильный формат - надо исправить и еще сделать авторесайз на 400 точек
         img_rect = img_surf.get_rect(bottomright=(400, 400))
         game.screen.blit(img_surf, img_rect)
         for i, char in enumerate(list(self.word[lang])):                  
@@ -35,18 +36,19 @@ class Char:
 
 class Game:
     def __init__(self):
-        pygame.init()       
+        pygame.init()
         self.screen = pygame.display.set_mode((600, 600))
         self.font = pygame.font.Font(None, 72)
         self.lang = 'en'
-        self.word_list = self.word_list_gen()        
+        self.word_list = self.word_list_gen()
 
     def word_list_gen(self):
+        # Создает список имен файлов формата 'слово на английском'-'слово на русском'.png 
         word_list = []
         with os.scandir('images') as listOfEntries:
             for entry in listOfEntries:
-                if re.match( r'\w*\-\w*\.png', entry.name) is not None:                    
-                    word_list.append(Word(entry.name.replace('.png', '')))
+                if re.match( r'\w*\-\w*\.png', entry.name) is not None:
+                    word_list.append(Word(entry.name))
                 else:
                     print(f'{entry.name} не соответствует формату')
         return word_list
@@ -68,7 +70,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     exit()
                 current_char = self.word.chars[self.char_idx]
-                if event.type == pygame.KEYDOWN:                
+                if event.type == pygame.KEYDOWN:
                     if event.unicode == current_char.text.lower():
                         current_char.color = (100, 0, 0)
                         current_char.draw()
@@ -77,7 +79,8 @@ class Game:
                         elif not self.won:
                             self.won = True
                             print('YOU WON!')
-                        
+                            # тут будет какой-то звук или картинка, про победу
+
                     if event.key == pygame.K_UP and self.lang == 'en':
                         self.lang = 'ru'
                         self.redraw()
@@ -97,5 +100,3 @@ class Game:
 if __name__ == '__main__':
     game = Game()
     game.run()
-
-
