@@ -8,7 +8,7 @@ class Word:
         self.word = dict()
         self.word['en'] = word_list[0]
         self.word['ru'] = word_list[1]
-        self.filename = os.path.join('images', word)
+        self.filename = os.path.join('images', word)        
 
     def draw(self, lang, screen):
         self.chars = []
@@ -17,10 +17,10 @@ class Word:
         # ругается на неправильный формат - надо исправить и еще сделать авторесайз на 400 точек
         img_rect = img_surf.get_rect(bottomright=(400, 400))
         screen.blit(img_surf, img_rect)
-        for i, char in enumerate(list(self.word[lang])):                  
+        for i, char in enumerate(list(self.word[lang])):
             self.chars.append(Char(char.upper(), (0, 100, 0), (50 * (i + 1), 500)))
             self.chars[-1].draw(screen)
-        
+
 
 class Char:    
     def __init__(self, char, color, coords):
@@ -61,17 +61,17 @@ class Game:
          self.won = False
 
     def run(self):        
-        self.redraw()       
+        self.redraw()
         while True:
             pygame.time.delay(20)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
                 current_char = self.word.chars[self.char_idx]
-                if event.type == pygame.KEYDOWN:
+                if event.type == pygame.KEYDOWN:                    
                     if event.unicode == current_char.text.lower():
                         current_char.color = (100, 0, 0)
-                        current_char.draw()
+                        current_char.draw(self.screen)
                         if self.char_idx < len(self.word.chars) - 1:
                             self.char_idx += 1
                         elif not self.won:
