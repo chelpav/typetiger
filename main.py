@@ -10,16 +10,16 @@ class Word:
         self.word['ru'] = word_list[1]
         self.filename = os.path.join('images', word)
 
-    def draw(self, lang):
+    def draw(self, lang, screen):
         self.chars = []
-        game.screen.fill((200, 255, 200))  
+        screen.fill((200, 255, 200))
         img_surf = pygame.image.load(self.filename)
         # ругается на неправильный формат - надо исправить и еще сделать авторесайз на 400 точек
         img_rect = img_surf.get_rect(bottomright=(400, 400))
-        game.screen.blit(img_surf, img_rect)
+        screen.blit(img_surf, img_rect)
         for i, char in enumerate(list(self.word[lang])):                  
             self.chars.append(Char(char.upper(), (0, 100, 0), (50 * (i + 1), 500)))
-            self.chars[-1].draw()
+            self.chars[-1].draw(screen)
         
 
 class Char:    
@@ -28,10 +28,10 @@ class Char:
         self.color = color
         self.coords = coords
 
-    def draw(self):        
+    def draw(self, screen):        
         self.surf = game.font.render(self.text, 1, self.color)
         self.place = self.surf.get_rect(center=self.coords)
-        game.screen.blit(self.surf, self.place)
+        screen.blit(self.surf, self.place)
         pygame.display.update()
 
 class Game:
@@ -41,12 +41,14 @@ class Game:
         self.font = pygame.font.Font(None, 72)
         self.lang = 'en'
         self.word_list = self.word_list_gen()
+        self.word_idx = 0
+        self.word = self.word_list[self.word_idx]
 
     def word_list_gen(self):
-        # Создает список имен файлов формата 'слово на английском'-'слово на русском'.png 
+        # Создает список имен файлов формата 'слово на английском'-'слово на русском'.png
         word_list = []
-        with os.scandir('images') as listOfEntries:
-            for entry in listOfEntries:
+        with os.scandir('images') as entries_list:
+            for entry in entries_list:
                 if re.match( r'\w*\-\w*\.png', entry.name) is not None:
                     word_list.append(Word(entry.name))
                 else:
@@ -54,16 +56,12 @@ class Game:
         return word_list
 
     def redraw(self):
-         self.word.draw(self.lang)
+         self.word.draw(self.lang,  self.screen)
          self.char_idx = 0
          self.won = False
 
-    def run(self):
-        self.word_idx = 0
-        self.word = self.word_list[self.word_idx]
-        self.word.draw(self.lang)
-        self.won = False
-        self.char_idx = 0
+    def run(self):        
+        self.redraw()       
         while True:
             pygame.time.delay(20)
             for event in pygame.event.get():
@@ -95,7 +93,6 @@ class Game:
                         self.word_idx -= 1
                         self.word = self.word_list[self.word_idx]
                         self.redraw()
-
 
 if __name__ == '__main__':
     game = Game()
