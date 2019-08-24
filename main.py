@@ -8,7 +8,7 @@ class Word:
         self.word = dict()
         self.word['en'] = word_list[0]
         self.word['ru'] = word_list[1]
-        self.filename = os.path.join('images', word)        
+        self.filename = os.path.join('images', word)
 
     def draw(self, lang, screen):
         self.chars = []
